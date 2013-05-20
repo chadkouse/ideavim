@@ -541,10 +541,10 @@ public class RegisterActions {
     // This represents two commands and one is linewise and the other is inclusive - the handler will fix it
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionPercentOrMatch", Command.Type.MOTION, Command.FLAG_SAVE_JUMP,
                           new Shortcut('%'));
-    //parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionRight", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE, new Shortcut[]{
-    //  new Shortcut('l'),
-    //  new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
-    //});
+    parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionRight", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE, new Shortcut[]{
+      new Shortcut('l'),
+      new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
+    });
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionRightMatchChar", Command.Type.MOTION,
                           Command.FLAG_MOT_INCLUSIVE | Command.FLAG_ALLOW_DIGRAPH,
                           new Shortcut('f'), Argument.Type.DIGRAPH);
