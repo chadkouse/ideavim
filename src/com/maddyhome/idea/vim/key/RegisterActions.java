@@ -448,7 +448,7 @@ public class RegisterActions {
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionColumn", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE,
                           new Shortcut('|'));
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionDown", Command.Type.MOTION, Command.FLAG_MOT_LINEWISE, new Shortcut[]{
-      new Shortcut('j'),
+      new Shortcut('n'),
       new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0)),
       new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_J, KeyEvent.CTRL_MASK)),
       new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK)),
@@ -541,10 +541,10 @@ public class RegisterActions {
     // This represents two commands and one is linewise and the other is inclusive - the handler will fix it
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionPercentOrMatch", Command.Type.MOTION, Command.FLAG_SAVE_JUMP,
                           new Shortcut('%'));
-    parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionRight", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE, new Shortcut[]{
-      new Shortcut('l'),
-      new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
-    });
+    //parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionRight", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE, new Shortcut[]{
+    //  new Shortcut('l'),
+    //  new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
+    //});
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionRightMatchChar", Command.Type.MOTION,
                           Command.FLAG_MOT_INCLUSIVE | Command.FLAG_ALLOW_DIGRAPH,
                           new Shortcut('f'), Argument.Type.DIGRAPH);
@@ -612,7 +612,7 @@ public class RegisterActions {
       new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.SHIFT_MASK))
     });
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionUp", Command.Type.MOTION, Command.FLAG_MOT_LINEWISE, new Shortcut[]{
-      new Shortcut('k'),
+      new Shortcut('e'),
       new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK)),
       new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0)),
     });
@@ -624,8 +624,8 @@ public class RegisterActions {
                           new Shortcut('-'));
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionWordEndLeft", Command.Type.MOTION, Command.FLAG_MOT_INCLUSIVE,
                           new Shortcut("ge"));
-    parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionWordEndRight", Command.Type.MOTION, Command.FLAG_MOT_INCLUSIVE,
-                          new Shortcut('e'));
+    //parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionWordEndRight", Command.Type.MOTION, Command.FLAG_MOT_INCLUSIVE,
+    //                      new Shortcut('e'));
     parser.registerAction(KeyParser.MAPPING_NVO, "VimMotionWordLeft", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE, new Shortcut[]{
       new Shortcut('b'),
       new Shortcut(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.SHIFT_MASK))
@@ -708,11 +708,11 @@ public class RegisterActions {
     parser.registerAction(KeyParser.MAPPING_NVO, "VimSearchRevEntry", Command.Type.MOTION,
                           Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SEARCH_REV | Command.FLAG_SAVE_JUMP,
                           new Shortcut('?'), Argument.Type.EX_STRING);
-    parser.registerAction(KeyParser.MAPPING_NVO, "VimSearchAgainNext", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SAVE_JUMP,
-                          new Shortcut('n'));
-    parser
-      .registerAction(KeyParser.MAPPING_NVO, "VimSearchAgainPrevious", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SAVE_JUMP,
-                      new Shortcut('N'));
+    //parser.registerAction(KeyParser.MAPPING_NVO, "VimSearchAgainNext", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SAVE_JUMP,
+    //                      new Shortcut('n'));
+    //parser
+    //  .registerAction(KeyParser.MAPPING_NVO, "VimSearchAgainPrevious", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SAVE_JUMP,
+    //                  new Shortcut('N'));
     parser.registerAction(KeyParser.MAPPING_NVO, "VimExEntry", Command.Type.OTHER_READ_WRITE,
                           new Shortcut(':'));
     parser.registerAction(KeyParser.MAPPING_NVO, "VimSearchWholeWordForward", Command.Type.MOTION,
