@@ -1,3 +1,6 @@
+**this fork is only to make ideavim compatible with colemak keys.**  
+`hjkl` becomes `hnel` (I just use `space` to go right)  
+
 IdeaVim
 =======
 
