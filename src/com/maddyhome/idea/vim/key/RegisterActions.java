@@ -708,11 +708,11 @@ public class RegisterActions {
     parser.registerAction(KeyParser.MAPPING_NVO, "VimSearchRevEntry", Command.Type.MOTION,
                           Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SEARCH_REV | Command.FLAG_SAVE_JUMP,
                           new Shortcut('?'), Argument.Type.EX_STRING);
-    //parser.registerAction(KeyParser.MAPPING_NVO, "VimSearchAgainNext", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SAVE_JUMP,
-    //                      new Shortcut('n'));
-    //parser
-    //  .registerAction(KeyParser.MAPPING_NVO, "VimSearchAgainPrevious", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SAVE_JUMP,
-    //                  new Shortcut('N'));
+    parser.registerAction(KeyParser.MAPPING_NVO, "VimSearchAgainNext", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SAVE_JUMP,
+                          new Shortcut('k'));
+    parser
+      .registerAction(KeyParser.MAPPING_NVO, "VimSearchAgainPrevious", Command.Type.MOTION, Command.FLAG_MOT_EXCLUSIVE | Command.FLAG_SAVE_JUMP,
+                      new Shortcut('K'));
     parser.registerAction(KeyParser.MAPPING_NVO, "VimExEntry", Command.Type.OTHER_READ_WRITE,
                           new Shortcut(':'));
     parser.registerAction(KeyParser.MAPPING_NVO, "VimSearchWholeWordForward", Command.Type.MOTION,
