@@ -5,15 +5,15 @@ IdeaVim
 =======
 
 IdeaVim is a Vim emulation plug-in for IDEs based on the IntelliJ platform.
-IdeaVim can be used with IntelliJ IDEA, RubyMine, PyCharm, PhpStorm, WebStorm
-and AppCode.
+IdeaVim can be used with IntelliJ IDEA, RubyMine, PyCharm, PhpStorm, WebStorm,
+AppCode and Android Studio.
 
 Resources:
 
-* [Plugin homepage](http://plugins.intellij.net/plugin/?id=164)
+* [Plugin homepage](http://plugins.jetbrains.com/plugin/164)
 * [Changelog](https://github.com/JetBrains/ideavim/blob/master/CHANGES.md)
 * [Bug tracker](http://youtrack.jetbrains.com/issues/VIM)
-* [Continuous integration builds](http://teamcity.jetbrains.com/project.html?projectId=project55)
+* [Continuous integration builds](http://teamcity.jetbrains.com/project.html?projectId=IdeaVim)
 * [@IdeaVim](http://twitter.com/ideavim) in Twitter
 
 
@@ -21,10 +21,10 @@ Installation
 ------------
 
 Use the IDE's plugin manager to install the latest version of the plugin.
-Start the IDE normally and enable the Vim emulation using "Tools | VIM
+Start the IDE normally and enable the Vim emulation using "Tools | Vim
 Emulator" menu item. At this point you must use Vim keystrokes in all editors.
 
-If you wish to disable the plugin, select the "Tools | VIM Emulator" menu so
+If you wish to disable the plugin, select the "Tools | Vim Emulator" menu so
 it is unchecked. At this point IDE will work with it's regular keyboard
 shortcuts.
 
@@ -35,7 +35,7 @@ Summary of Supported Vim Features
 Supported:
 
 * Motion keys
-* Deletion/Changing
+* Deletion/changing
 * Insert mode commands
 * Marks
 * Registers
@@ -52,9 +52,9 @@ Supported:
 Not supported (yet):
 
 * Key mappings
-* Various less used commands
-* Jump lists
 * Window commands
+* Jump lists
+* Various less used commands
 
 Please see the file [index.txt](https://github.com/JetBrains/ideavim/blob/master/index.txt)
 for a list of commands covered with tests.
@@ -70,12 +70,6 @@ so the behaviour of the `u` and `<C-R>` commands may differ from the original
 Vim. Vim compatibility of undo/redo may be improved in the future releases.
 
 ### Escape
-
-In the IDE, the `<Esc>` key is used during editing to cancel code completion
-windows, dialog windows, and parameter tooltips. While in the Vim insert mode,
-`<Esc>` is used to return back to the normal mode. If you are typing in the
-insert mode and a code completion window is popped up, pressing `<Esc>` cancel
-the window without exiting the insert mode.
 
 Using `<Esc>` in dialog windows remains problematic. For most dialog windows
 the Vim emulator is put into the insert mode without the possibility to switch to
@@ -132,14 +126,28 @@ keyboard shortcuts, and their new VIM keystrokes.
               Check In Project    Ctrl-K              <None>
 
 
-Development
------------
+Contributing
+------------
+
+### Where to Start
+
+In order to contribute to IdeaVim you should have some understanding of Java.
+
+See also these docs on the IntelliJ API:
+
+* [IntelliJ architectural overview](http://confluence.jetbrains.com/display/IDEADEV/IntelliJ+IDEA+Architectural+Overview)
+* [IntelliJ plugin development resources](http://confluence.jetbrains.com/display/IDEADEV/PluginDevelopment)
+
+You can start by picking relatively simple tasks that are tagged with
+[#patch_welcome](http://youtrack.jetbrains.com/issues/VIM?q=%23patch_welcome)
+in the issue tracker.
+
 
 ### Development Environment
 
 1. Fork IdeaVim on GitHub and clone the repository on your local machine.
 
-2. Open the project in IntelliJ IDEA 11+ (Community or Ultimate) using "File |
+2. Open the project in IntelliJ IDEA 12+ (Community or Ultimate) using "File |
    Open... | /path/to/ideavim".
 
 3. Set up a JDK if you haven't got it yet. Use "File | Project Structure | SDKs

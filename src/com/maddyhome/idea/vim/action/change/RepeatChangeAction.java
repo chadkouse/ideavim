@@ -1,23 +1,22 @@
-package com.maddyhome.idea.vim.action.change;
-
 /*
- * IdeaVim - A Vim emulator plugin for IntelliJ Idea
- * Copyright (C) 2003-2005 Rick Maddy
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package com.maddyhome.idea.vim.action.change;
 
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
@@ -39,7 +38,7 @@ public class RepeatChangeAction extends EditorAction {
   }
 
   private static class Handler extends AbstractEditorActionHandler {
-    public boolean execute(Editor editor, @NotNull DataContext context, @NotNull Command command) {
+    public boolean execute(@NotNull Editor editor, @NotNull DataContext context, @NotNull Command command) {
       CommandState state = CommandState.getInstance(editor);
       Command cmd = state.getLastChangeCommand();
       if (cmd != null) {
@@ -65,7 +64,9 @@ public class RepeatChangeAction extends EditorAction {
           // oops
         }
         state.popState();
-        state.setCommand(save);
+        if (save != null) {
+          state.setCommand(save);
+        }
         state.saveLastChangeCommand(cmd);
         CommandGroups.getInstance().getRegister().selectRegister(reg);
 

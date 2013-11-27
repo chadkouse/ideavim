@@ -1,17 +1,19 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.maddyhome.idea.vim;
 
@@ -48,7 +50,6 @@ import com.maddyhome.idea.vim.command.CommandState;
 import com.maddyhome.idea.vim.ex.CommandParser;
 import com.maddyhome.idea.vim.group.*;
 import com.maddyhome.idea.vim.helper.*;
-import com.maddyhome.idea.vim.key.RegisterActions;
 import com.maddyhome.idea.vim.option.Options;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +59,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * This plugin attempts to emulate the keybinding and general functionality of Vim and gVim. See the supplied
+ * This plugin attempts to emulate the key binding and general functionality of Vim and gVim. See the supplied
  * documentation for a complete list of supported and unsupported Vim emulation. The code base contains some debugging
  * output that can be enabled in necessary.
  * <p/>
@@ -88,7 +89,6 @@ public class VimPlugin implements ApplicationComponent, PersistentStateComponent
   private static final boolean REFRAIN_FROM_SCROLLING_VIM_VALUE = true;
 
   private VimTypedActionHandler vimHandler;
-  private RegisterActions actions;
   private boolean isBlockCursor = false;
   private boolean isAnimatedScrolling = false;
   private boolean isRefrainFromScrolling = false;
@@ -159,7 +159,11 @@ public class VimPlugin implements ApplicationComponent, PersistentStateComponent
     // Add some listeners so we can handle special events
     setupListeners();
 
-    getActions();
+    // Register vim actions in command mode
+    RegisterActions.registerActions();
+
+    // Register ex handlers
+    CommandParser.getInstance().registerHandlers();
 
     LOG.debug("done");
   }
@@ -355,7 +359,7 @@ public class VimPlugin implements ApplicationComponent, PersistentStateComponent
   }
 
   /**
-   * Inidicate to the user that an error has occurred. Just beep.
+   * Indicate to the user that an error has occurred. Just beep.
    */
   public static void indicateError() {
     if (ApplicationManager.getApplication().isUnitTestMode()) {
@@ -372,9 +376,9 @@ public class VimPlugin implements ApplicationComponent, PersistentStateComponent
 
   public static void showMessage(@Nullable String msg) {
     ProjectManager pm = ProjectManager.getInstance();
-    Project[] projs = pm.getOpenProjects();
-    for (Project proj : projs) {
-      StatusBar bar = WindowManager.getInstance().getStatusBar(proj);
+    Project[] projects = pm.getOpenProjects();
+    for (Project project : projects) {
+      StatusBar bar = WindowManager.getInstance().getStatusBar(project);
       if (bar != null) {
         if (msg == null || msg.length() == 0) {
           bar.setInfo("");
@@ -425,17 +429,6 @@ public class VimPlugin implements ApplicationComponent, PersistentStateComponent
     for (Editor editor : editors) {
       editor.getSettings().setRefrainFromScrolling(isOn);
     }
-  }
-
-  private RegisterActions getActions() {
-    if (actions == null) {
-      // Register vim actions in command mode
-      actions = RegisterActions.getInstance();
-      // Register ex handlers
-      CommandParser.getInstance().registerHandlers();
-    }
-
-    return actions;
   }
 
   public boolean isError() {

@@ -1,17 +1,19 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.maddyhome.idea.vim.option;
 
@@ -33,6 +35,8 @@ import java.util.*;
  * Maintains the set of support options
  */
 public class Options {
+  public final String[] VIMRC_FILES = {".ideavimrc", "_ideavimrc", ".vimrc", "_vimrc"};
+
   /**
    * Gets the singleton instance of the options
    *
@@ -52,12 +56,8 @@ public class Options {
    * @return True if set, false if not set or name is invalid or not a boolean option
    */
   public boolean isSet(String name) {
-    Option opt = getOption(name);
-    if (opt != null && opt instanceof ToggleOption) {
-      return ((ToggleOption)opt).getValue();
-    }
-
-    return false;
+    final Option opt = getOption(name);
+    return opt != null && opt instanceof ToggleOption && ((ToggleOption)opt).getValue();
   }
 
   /**
@@ -377,7 +377,7 @@ public class Options {
       logger.debug("height=" + height);
     }
 
-    StringBuffer res = new StringBuffer();
+    final StringBuilder res = new StringBuilder();
     if (showIntro) {
       res.append("--- Options ---\n");
     }
@@ -424,31 +424,25 @@ public class Options {
    * Attempts to load all :set commands from the user's .vimrc file if found
    */
   private void loadVimrc() {
-    // Look in the JVM's idea of the user's home directory for .vimrc or _vimrc
-    String home = System.getProperty("user.home");
-    if (home != null) {
-      File rc = new File(home, ".vimrc");
-      if (!rc.exists()) {
-        rc = new File(home, "_vimrc");
-        if (!rc.exists()) {
-          return;
-        }
-      }
-
-      if (logger.isDebugEnabled()) logger.debug("found vimrc at " + rc);
-
-      try {
-        BufferedReader br = new BufferedReader(new FileReader(rc));
-        String line;
-        while ((line = br.readLine()) != null) {
-          if (line.startsWith(":set") || line.startsWith("set")) {
-            int pos = line.indexOf(' ');
-            parseOptionLine(null, line.substring(pos).trim(), false);
+    final String homeDirName = System.getProperty("user.home");
+    if (homeDirName != null) {
+      for (String fileName : VIMRC_FILES) {
+        final File file = new File(homeDirName, fileName);
+        if (file.exists()) {
+          try {
+            final BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null) {
+              if (line.startsWith(":set") || line.startsWith("set")) {
+                final int pos = line.indexOf(' ');
+                parseOptionLine(null, line.substring(pos).trim(), false);
+              }
+            }
           }
+          catch (Exception ignored) {
+          }
+          break;
         }
-      }
-      catch (Exception e) {
-        // no-op
       }
     }
   }

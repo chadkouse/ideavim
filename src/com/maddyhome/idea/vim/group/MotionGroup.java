@@ -1,17 +1,19 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.maddyhome.idea.vim.group;
 
@@ -162,7 +164,7 @@ public class MotionGroup extends AbstractActionGroup {
 
         int start = editor.getSelectionModel().getSelectionStart();
         int end = editor.getSelectionModel().getSelectionEnd();
-        editor.getSelectionModel().setSelection(start, end - 1);
+        editor.getSelectionModel().setSelection(start, Math.max(start, end - 1));
 
         break;
     }
@@ -239,7 +241,7 @@ public class MotionGroup extends AbstractActionGroup {
         logger.debug("start=" + start);
         logger.debug("end=" + end);
       }
-      editor.getSelectionModel().setSelection(start, end - 1);
+      editor.getSelectionModel().setSelection(start, Math.max(start, end - 1));
 
       setVisualMode(editor, CommandState.SubMode.VISUAL_LINE);
 
@@ -627,8 +629,7 @@ public class MotionGroup extends AbstractActionGroup {
     // If we are doing this move as part of a change command (e.q. cw), we need to count the current end of
     // word if the cursor happens to be on the end of a word already. If this is a normal move, we don't count
     // the current word.
-    boolean stay = CommandState.getInstance(editor).getCommand().getType() == Command.Type.CHANGE;
-    int pos = SearchHelper.findNextWordEnd(editor, count, bigWord, stay);
+    int pos = SearchHelper.findNextWordEnd(editor, count, bigWord);
     if (pos == -1) {
       if (count < 0) {
         return moveCaretToLineStart(editor, 0);

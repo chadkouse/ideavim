@@ -1,23 +1,22 @@
-package com.maddyhome.idea.vim.key;
-
 /*
- * IdeaVim - A Vim emulator plugin for IntelliJ Idea
- * Copyright (C) 2003-2005 Rick Maddy
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package com.maddyhome.idea.vim.key;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -41,7 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * The key parser creates a tree of key sequences with terminals represnting complete keystroke sequences mapped to
+ * The key parser creates a tree of key sequences with terminals representing complete keystroke sequences mapped to
  * specific actions. Arguments also act as terminals represents a complete command that requires more keystrokes as
  * an argument.
  * <p/>
@@ -104,30 +103,30 @@ public class KeyParser {
   public void setupActionHandler(@NotNull String ideaActName, @NotNull String vimActName) {
     if (logger.isDebugEnabled()) logger.debug("vimActName=" + vimActName);
 
-    ActionManager amgr = ActionManager.getInstance();
-    AnAction vaction = amgr.getAction(vimActName);
-    if (vaction instanceof DelegateAction) {
-      amgr.unregisterAction(vimActName);
+    ActionManager manager = ActionManager.getInstance();
+    AnAction vimAction = manager.getAction(vimActName);
+    if (vimAction instanceof DelegateAction) {
+      manager.unregisterAction(vimActName);
     }
-    setupActionHandler(ideaActName, vaction);
+    setupActionHandler(ideaActName, vimAction);
   }
 
-  public void setupActionHandler(@NotNull String ideaActName, @NotNull AnAction vaction) {
+  public void setupActionHandler(@NotNull String ideaActName, @NotNull AnAction vimAction) {
     if (logger.isDebugEnabled()) logger.debug("ideaActName=" + ideaActName);
 
-    ActionManager amgr = ActionManager.getInstance();
-    AnAction iaction = amgr.getAction(ideaActName);
-    if (iaction == null) return;  // ignore actions which aren't available in RubyMine
-    if (vaction instanceof DelegateAction) {
-      DelegateAction daction = (DelegateAction)vaction;
-      daction.setOrigAction(iaction);
+    ActionManager manager = ActionManager.getInstance();
+    AnAction ideaAction = manager.getAction(ideaActName);
+    if (ideaAction == null) return;  // ignore actions which aren't available in RubyMine
+    if (vimAction instanceof DelegateAction) {
+      DelegateAction delegateAction = (DelegateAction)vimAction;
+      delegateAction.setOrigAction(ideaAction);
 
-      amgr.unregisterAction(ideaActName);
+      manager.unregisterAction(ideaActName);
 
-      amgr.registerAction(ideaActName, vaction);
+      manager.registerAction(ideaActName, vimAction);
     }
 
-    amgr.registerAction("Orig" + ideaActName, iaction);
+    manager.registerAction("Orig" + ideaActName, ideaAction);
   }
 
   public void setupActionHandler(@NotNull String ideaActName, String vimActName, @NotNull KeyStroke stroke) {
@@ -136,18 +135,18 @@ public class KeyParser {
 
   public void setupActionHandler(@NotNull String ideaActName, @Nullable String vimActName, @NotNull KeyStroke stroke, boolean special) {
     if (logger.isDebugEnabled()) logger.debug("setupActionHandler for " + ideaActName + " and " + vimActName + " for " + stroke);
-    ActionManager amgr = ActionManager.getInstance();
-    AnAction action = amgr.getAction(ideaActName);
-    if (action instanceof EditorAction) {
+    ActionManager manager = ActionManager.getInstance();
+    AnAction ideaAction = manager.getAction(ideaActName);
+    if (ideaAction instanceof EditorAction) {
       if (logger.isDebugEnabled()) logger.debug(ideaActName + " is an EditorAction");
-      EditorAction iaction = (EditorAction)action;
-      EditorActionHandler handler = iaction.getHandler();
+      EditorAction ideaEditorAction = (EditorAction)ideaAction;
+      EditorActionHandler handler = ideaEditorAction.getHandler();
       if (vimActName != null) {
-        EditorAction vaction = (EditorAction)amgr.getAction(vimActName);
-        vaction.setupHandler(handler);
+        EditorAction vimAction = (EditorAction)manager.getAction(vimActName);
+        vimAction.setupHandler(handler);
       }
 
-      iaction.setupHandler(new EditorKeyHandler(handler, stroke, special));
+      ideaEditorAction.setupHandler(new EditorKeyHandler(handler, stroke, special));
     }
 
     //removePossibleConflict(stroke);
@@ -178,21 +177,10 @@ public class KeyParser {
     return res;
   }
 
-  /**
-   * Registers the action
-   *
-   * @param mapping The set of mappings the shortcut is applicable to
-   * @param actName The action the shortcut will execute
-   * @param cmdType The type of the command
-   */
-  public void registerAction(int mapping, @NotNull String actName, @NotNull Command.Type cmdType) {
-    registerAction(mapping, actName, cmdType, 0);
-  }
-
   public void registerAction(int mapping, @NotNull String actName, @NotNull Command.Type cmdType, int cmdFlags) {
     String ideaName = actName.substring(3);
-    ActionManager amgr = ActionManager.getInstance();
-    if (amgr.getAction(ideaName) == null) {
+    ActionManager manager = ActionManager.getInstance();
+    if (manager.getAction(ideaName) == null) {
       logger.info("No registered action " + ideaName);
       return;
     }
@@ -208,7 +196,7 @@ public class KeyParser {
       }
     }
 
-    registerAction(mapping, actName, cmdType, cmdFlags, shortcuts.toArray(new Shortcut[]{}));
+    registerAction(mapping, actName, cmdType, cmdFlags, shortcuts.toArray(new Shortcut[shortcuts.size()]));
     KeyStroke firstStroke = null;
     for (int i = 0; i < shortcuts.size(); i++) {
       Shortcut cut = shortcuts.get(i);
@@ -218,15 +206,15 @@ public class KeyParser {
       }
     }
 
-    AnAction iaction = amgr.getAction(ideaName);
-    AnAction vaction = amgr.getAction(actName);
-    if (vaction instanceof DelegateAction) {
-      DelegateAction daction = (DelegateAction)vaction;
-      daction.setOrigAction(iaction);
+    AnAction ideaAction = manager.getAction(ideaName);
+    AnAction vimAction = manager.getAction(actName);
+    if (vimAction instanceof DelegateAction) {
+      DelegateAction delegateAction = (DelegateAction)vimAction;
+      delegateAction.setOrigAction(ideaAction);
     }
 
-    if (iaction instanceof EditorAction) {
-      EditorAction ea = (EditorAction)iaction;
+    if (ideaAction instanceof EditorAction) {
+      EditorAction ea = (EditorAction)ideaAction;
       setupActionHandler(ideaName, new PassThruDelegateEditorAction(firstStroke, ea.getHandler()));
     }
     else {
@@ -361,12 +349,13 @@ public class KeyParser {
     for (int m = 0; m < MAPPING_CNT; m++) {
       if ((mapping & map) != 0) {
         Node node = getKeyRoot(map);
-        int len = keys.length;
+        final int len = keys.length;
         // Add a child for each keystroke in the shortcut for this action
         for (int i = 0; i < len; i++) {
-          ParentNode base = (ParentNode)node;
-
-          node = addNode(base, actName, cmdType, cmdFlags, keys[i], argType, i == len - 1);
+          if (node instanceof ParentNode) {
+            final ParentNode base = (ParentNode)node;
+            node = addNode(base, actName, cmdType, cmdFlags, keys[i], argType, i == len - 1);
+          }
         }
       }
 
@@ -425,16 +414,8 @@ public class KeyParser {
 
   @NotNull
   public String toString() {
-    StringBuffer res = new StringBuffer();
-
-    res.append("KeyParser=[");
-    res.append("roots=[");
-    res.append(keyRoots);
-    res.append("]");
-
-    return res.toString();
+    return "KeyParser=[roots=[" + keyRoots + "]";
   }
-
 
   @NotNull private HashMap<Integer, RootNode> keyRoots = new HashMap<Integer, RootNode>();
 

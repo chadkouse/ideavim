@@ -1,8 +1,22 @@
-<idea-plugin url="http://plugins.intellij.net/plugin/?id=164">
+<idea-plugin url="http://plugins.jetbrains.com/plugin/164">
   <name>IdeaVim</name>
   <id>IdeaVIM</id>
   <change-notes>
     <![CDATA[
+      <p>0.32:</p>
+      <ul>
+        <li>Fixed API compatibility with IntelliJ platform builds 132.1052+</li>
+      </ul>
+      <p>0.31:</p>
+      <ul>
+        <li>Various bug fixes</li>
+      </ul>
+      <p>0.30:</p>
+      <ul>
+        <li>Support for a separate <code>.ideavimrc</code> config file</li>
+        <li>Fixed long-standing issues with merged undo/redo commands and <code>&lt;Esc&gt;</code> during completion</li>
+        <li>Various bug fixes</li>
+      </ul>
       <p>0.29:</p>
       <ul>
         <li>Fixed repeat buffer limits</li>
@@ -13,26 +27,12 @@
       <ul>
         <li>Fixed reconfigure Vim keymap for user-defined base keymaps</li>
       </ul>
-      <p>0.27:</p>
-      <ul>
-        <li>Better Vim keymaps for Mac OS X</li>
-        <li>Ask if the plugin should enable repeating keys in Mac OS X</li>
-        <li>Fixed a long-standing bug with code completion and repeat last change command ('<code>.</code>')</li>
-        <li>Various bug fixes</li>
-      </ul>
-      <p>0.26:</p>
-      <ul>
-        <li>Added support for paste in the command mode: from a register using <code>&lt;C-R&gt;</code>, from the clipboard using <code>&lt;S-Insert&gt;</code> or <code>&lt;M-V&gt;</code></li>
-        <li>Added support for the last change position mark (the dot <code>.</code> mark)</li>
-        <li>New shortcuts for Go to declaration <code>&lt;C-]&gt;</code> and Navigate back <code>&lt;C-T&gt;</code></li>
-        <li>Various bug fixes</li>
-      </ul>
       <p>See also the complete <a href="https://github.com/JetBrains/ideavim/blob/master/CHANGES.md">changelog</a>.</p>
     ]]>
   </change-notes>
   <description>
     <![CDATA[
-      <p>Vim emulation plug-in for IDEs based on the IntelliJ platform. IdeaVim can be used with IntelliJ IDEA, RubyMine, PyCharm, PhpStorm, WebStorm and AppCode.</p>
+      <p>Vim emulation plug-in for IDEs based on the IntelliJ platform. IdeaVim can be used with IntelliJ IDEA, RubyMine, PyCharm, PhpStorm, WebStorm, AppCode and Android Studio.</p>
       <p>Supported functionality:</p>
       <ul>
           <li>Motion keys</li>
@@ -347,11 +347,6 @@
     <action id="VimResetMode" class="com.maddyhome.idea.vim.action.ResetModeAction" text="Reset Mode"/>
     <action id="VimRedo" class="com.maddyhome.idea.vim.action.change.RedoAction" text="Redo"/>
     <action id="VimUndo" class="com.maddyhome.idea.vim.action.change.UndoAction" text="Undo"/>
-    <action id="VimGenerateConstructor" class="com.maddyhome.idea.vim.action.TxActionWrapper" text="Generate Constructor"/>
-    <action id="VimGenerateGetter" class="com.maddyhome.idea.vim.action.TxActionWrapper" text="Generate Getter"/>
-    <action id="VimGenerateSetter" class="com.maddyhome.idea.vim.action.TxActionWrapper" text="Generate Setter"/>
-    <action id="VimGenerateGetterAndSetter" class="com.maddyhome.idea.vim.action.TxActionWrapper" text="Generate Getter and Setter"/>
-    <action id="VimGenerateEquals" class="com.maddyhome.idea.vim.action.TxActionWrapper" text="Generate Equals"/>
 
     <action id="VimClassNameCompletion" class="com.maddyhome.idea.vim.action.OriginalDelegateAction" text="Class Name Completion"/>
     <action id="VimCodeCompletion" class="com.maddyhome.idea.vim.action.OriginalDelegateAction" text="Code Completion"/>

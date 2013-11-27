@@ -14,6 +14,8 @@ import com.intellij.testFramework.fixtures.impl.LightTempDirTestFixtureImpl;
 import com.maddyhome.idea.vim.KeyHandler;
 import com.maddyhome.idea.vim.VimPlugin;
 import com.maddyhome.idea.vim.command.CommandState;
+import com.maddyhome.idea.vim.ex.CommandParser;
+import com.maddyhome.idea.vim.ex.ExException;
 import com.maddyhome.idea.vim.helper.EditorDataContext;
 import com.maddyhome.idea.vim.helper.RunnableHelper;
 import com.maddyhome.idea.vim.option.Options;
@@ -67,6 +69,11 @@ public abstract class VimTestCase extends UsefulTestCase {
   @NotNull
   protected Editor typeTextInFile(@NotNull final List<KeyStroke> keys, @NotNull String fileContents) {
     myFixture.configureByText("a.txt", fileContents);
+    return typeText(keys);
+  }
+
+  @NotNull
+  protected Editor typeText(@NotNull final List<KeyStroke> keys) {
     final Editor editor = myFixture.getEditor();
     final KeyHandler keyHandler = KeyHandler.getInstance();
     final EditorDataContext dataContext = new EditorDataContext(editor);
@@ -82,6 +89,26 @@ public abstract class VimTestCase extends UsefulTestCase {
           else {
             keyHandler.handleKey(editor, key, dataContext);
           }
+        }
+      }
+    }, null, null);
+    return editor;
+  }
+
+  @NotNull
+  protected Editor runExCommand(@NotNull final String command) {
+    final Editor editor = myFixture.getEditor();
+    final EditorDataContext dataContext = new EditorDataContext(editor);
+    final Project project = myFixture.getProject();
+    final CommandParser commandParser = CommandParser.getInstance();
+    RunnableHelper.runWriteCommand(project, new Runnable() {
+      @Override
+      public void run() {
+        try {
+          commandParser.processCommand(editor, dataContext, command, 1);
+        }
+        catch (ExException e) {
+          throw new RuntimeException(e);
         }
       }
     }, null, null);

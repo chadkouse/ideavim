@@ -1,17 +1,19 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.maddyhome.idea.vim.group;
 
@@ -21,6 +23,8 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.event.*;
@@ -342,16 +346,17 @@ public class ChangeGroup extends AbstractActionGroup {
     CommandGroups.getInstance().getMark().setMark(editor, '[', insertStart);
 
     // If we are repeating the last insert/replace
-    if (state.getMode() == CommandState.Mode.REPEAT) {
+    final Command cmd = state.getCommand();
+    if (cmd != null && state.getMode() == CommandState.Mode.REPEAT) {
       if (mode == CommandState.Mode.REPLACE) {
         processInsert(editor, context);
       }
       // If this command doesn't allow repeating, set the count to 1
-      if ((state.getCommand().getFlags() & Command.FLAG_NO_REPEAT) != 0) {
+      if ((cmd.getFlags() & Command.FLAG_NO_REPEAT) != 0) {
         repeatInsert(editor, context, 1, false);
       }
       else {
-        repeatInsert(editor, context, state.getCommand().getCount(), false);
+        repeatInsert(editor, context, cmd.getCount(), false);
       }
       if (mode == CommandState.Mode.REPLACE) {
         processInsert(editor, context);
@@ -359,7 +364,7 @@ public class ChangeGroup extends AbstractActionGroup {
     }
     // Here we begin insert/replace mode
     else {
-      lastInsert = state.getCommand();
+      lastInsert = cmd;
       strokes.clear();
       repeatCharsCount = 0;
       if (document != null && documentListener != null) {
@@ -602,11 +607,17 @@ public class ChangeGroup extends AbstractActionGroup {
     }
 
     if (key.getKeyChar() != KeyEvent.CHAR_UNDEFINED) {
-      ApplicationManager.getApplication().runWriteAction(new Runnable() {
+      final Document doc = editor.getDocument();
+      CommandProcessor.getInstance().executeCommand(editor.getProject(), new Runnable() {
+        @Override
         public void run() {
-          KeyHandler.getInstance().getOriginalHandler().execute(editor, key.getKeyChar(), context);
+          ApplicationManager.getApplication().runWriteAction(new Runnable() {
+            public void run() {
+              KeyHandler.getInstance().getOriginalHandler().execute(editor, key.getKeyChar(), context);
+            }
+          });
         }
-      });
+      }, "", doc, UndoConfirmationPolicy.DEFAULT, doc);
 
       return true;
     }
@@ -866,27 +877,22 @@ public class ChangeGroup extends AbstractActionGroup {
    * @return true if able to delete the text, false if not
    */
   public boolean deleteRange(@NotNull Editor editor,
-                             @Nullable TextRange range,
+                             @NotNull TextRange range,
                              @Nullable SelectionType type,
                              boolean isChange) {
-    if (range == null) {
-      return false;
-    }
-    else {
-      final boolean res = deleteText(editor, range, type);
-      final int size = EditorHelper.getFileSize(editor);
-      if (res) {
-        final int pos;
-        if (editor.getCaretModel().getOffset() > size) {
-          pos = size - 1;
-        }
-        else {
-          pos = EditorHelper.normalizeOffset(editor, range.getStartOffset(), isChange);
-        }
-        MotionGroup.moveCaret(editor, pos);
+    final boolean res = deleteText(editor, range, type);
+    final int size = EditorHelper.getFileSize(editor);
+    if (res) {
+      final int pos;
+      if (editor.getCaretModel().getOffset() > size) {
+        pos = size - 1;
       }
-      return res;
+      else {
+        pos = EditorHelper.normalizeOffset(editor, range.getStartOffset(), isChange);
+      }
+      MotionGroup.moveCaret(editor, pos);
     }
+    return res;
   }
 
   /**
@@ -1095,8 +1101,8 @@ public class ChangeGroup extends AbstractActionGroup {
       int pos = offset;
       int size = EditorHelper.getFileSize(editor);
       int cnt = count * argument.getMotion().getCount();
-      int pos1 = SearchHelper.findNextWordEnd(chars, pos, size, cnt, bigWord, false, false);
-      int pos2 = SearchHelper.findNextWordEnd(chars, pos1, size, -cnt, bigWord, false, false);
+      int pos1 = SearchHelper.findNextWordEnd(chars, pos, size, cnt, bigWord, false);
+      int pos2 = SearchHelper.findNextWordEnd(chars, pos1, size, -cnt, bigWord, false);
       if (logger.isDebugEnabled()) {
         logger.debug("pos=" + pos);
         logger.debug("pos1=" + pos1);
@@ -1234,9 +1240,8 @@ public class ChangeGroup extends AbstractActionGroup {
    * @return true if able to delete the text, false if not
    */
   public boolean changeCaseMotion(@NotNull Editor editor, DataContext context, int count, int rawCount, char type, @NotNull Argument argument) {
-    TextRange range = MotionGroup.getMotionRange(editor, context, count, rawCount, argument, true, false);
-
-    return changeCaseRange(editor, range, type);
+    final TextRange range = MotionGroup.getMotionRange(editor, context, count, rawCount, argument, true, false);
+    return range != null && changeCaseRange(editor, range, type);
   }
 
   /**
@@ -1247,20 +1252,14 @@ public class ChangeGroup extends AbstractActionGroup {
    * @param type    The case change type (TOGGLE, UPPER, LOWER)
    * @return true if able to delete the text, false if not
    */
-  public boolean changeCaseRange(@NotNull Editor editor, @Nullable TextRange range, char type) {
-    if (range == null) {
-      return false;
+  public boolean changeCaseRange(@NotNull Editor editor, @NotNull TextRange range, char type) {
+    int[] starts = range.getStartOffsets();
+    int[] ends = range.getEndOffsets();
+    for (int i = ends.length - 1; i >= 0; i--) {
+      changeCase(editor, starts[i], ends[i], type);
     }
-    else {
-      int[] starts = range.getStartOffsets();
-      int[] ends = range.getEndOffsets();
-      for (int i = ends.length - 1; i >= 0; i--) {
-        changeCase(editor, starts[i], ends[i], type);
-      }
-      MotionGroup.moveCaret(editor, range.getStartOffset());
-
-      return true;
-    }
+    MotionGroup.moveCaret(editor, range.getStartOffset());
+    return true;
   }
 
   /**
@@ -1302,16 +1301,16 @@ public class ChangeGroup extends AbstractActionGroup {
   }
 
   public void indentMotion(@NotNull Editor editor, @NotNull DataContext context, int count, int rawCount, @NotNull Argument argument, int dir) {
-    TextRange range = MotionGroup.getMotionRange(editor, context, count, rawCount, argument, false, false);
-
-    indentRange(editor, context, range, 1, dir);
+    final TextRange range = MotionGroup.getMotionRange(editor, context, count, rawCount, argument, false, false);
+    if (range != null) {
+      indentRange(editor, context, range, 1, dir);
+    }
   }
 
-  public void indentRange(@NotNull Editor editor, @NotNull DataContext context, @Nullable TextRange range, int count, int dir) {
+  public void indentRange(@NotNull Editor editor, @NotNull DataContext context, @NotNull TextRange range, int count, int dir) {
     if (logger.isDebugEnabled()) {
       logger.debug("count=" + count);
     }
-    if (range == null) return;
 
     Project proj = PlatformDataKeys.PROJECT.getData(context); // API change - don't merge
     int tabSize = 8;

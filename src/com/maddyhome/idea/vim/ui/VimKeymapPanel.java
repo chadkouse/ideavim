@@ -1,6 +1,24 @@
+/*
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.maddyhome.idea.vim.ui;
 
-import com.intellij.ide.ui.ListCellRendererWrapper;
+import com.intellij.ui.ListCellRendererWrapper;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.keymap.impl.KeymapManagerImpl;
@@ -35,16 +53,19 @@ public class VimKeymapPanel {
     }
 
     myKeymapComboBox.setModel(new DefaultComboBoxModel(keymaps.toArray(new Keymap[keymaps.size()])));
-    myKeymapComboBox.setRenderer(new ListCellRendererWrapper(myKeymapComboBox.getRenderer()) {
+    final ListCellRendererWrapper<Keymap> renderer = new ListCellRendererWrapper<Keymap>() {
       @Override
-      public void customize(final JList list, final Object value, final int index, final boolean selected, final boolean cellHasFocus) {
-        Keymap keymap = (Keymap)value;
-        if (keymap == null) {
-          return;
+      public void customize(final JList list,
+                            final Keymap value,
+                            final int index,
+                            final boolean selected,
+                            final boolean cellHasFocus) {
+        if (value != null) {
+          setText(value.getPresentableName());
         }
-        setText(keymap.getPresentableName());
       }
-    });
+    };
+    myKeymapComboBox.setRenderer(renderer);
 
     final String previousKeyMap = VimPlugin.getInstance().getPreviousKeyMap();
     myKeymapComboBox.getModel().setSelectedItem(preselectedKeymap != null ? preselectedKeymap :

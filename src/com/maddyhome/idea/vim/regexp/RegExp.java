@@ -1,23 +1,22 @@
-package com.maddyhome.idea.vim.regexp;
-
 /*
- * IdeaVim - A Vim emulator plugin for IntelliJ Idea
- * Copyright (C) 2003-2005 Rick Maddy
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package com.maddyhome.idea.vim.regexp;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
@@ -321,13 +320,13 @@ public class RegExp {
   private int backslash_trans(int c) {
     switch (c) {
       case 'r':
-        return Ascii.CR;
+        return '\r';
       case 't':
-        return Ascii.TAB;
+        return '\t';
       case 'e':
-        return Ascii.ESC;
+        return 0x1b;
       case 'b':
-        return Ascii.BS;
+        return '\b';
     }
     return c;
   }
@@ -4061,7 +4060,7 @@ public class RegExp {
                   if (reg_mmatch.endpos[no].lnum == clnum) {
                     break;
                   }
-                  dst.append(Ascii.CR);
+                  dst.append('\r');
                   s = reg_getline(++clnum);
                   if (reg_mmatch.endpos[no].lnum == clnum) {
                     len = reg_mmatch.endpos[no].col;
@@ -4080,7 +4079,7 @@ public class RegExp {
                 return dst.toString();
               }
               else {
-                if (backslash && (s.charAt() == Ascii.CR || s.charAt() == '\\')) {
+                if (backslash && (s.charAt() == '\r' || s.charAt() == '\\')) {
                   /*
                                      * Insert a backslash in front of a CR, otherwise
                                      * it will be replaced by a line break.
