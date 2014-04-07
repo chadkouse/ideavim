@@ -1,5 +1,9 @@
-**this fork is only to make ideavim compatible with colemak keys.**  
-`hjkl` becomes `hnel` (I just use `space` to go right)  
+~~**this fork is only to make ideavim compatible with colemak keys.**~~  
+~~`hjkl` becomes `hnel` (I just use `space` to go right)~~  
+
+Obsolete
+=======
+please see [this pull request](https://github.com/JetBrains/ideavim/pull/27) which allows you to specify keymaps in .vimrc now!  
 
 IdeaVim
 =======
