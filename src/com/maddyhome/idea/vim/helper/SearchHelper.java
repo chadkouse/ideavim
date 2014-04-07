@@ -1,23 +1,22 @@
-package com.maddyhome.idea.vim.helper;
-
 /*
- * IdeaVim - A Vim emulator plugin for IntelliJ Idea
- * Copyright (C) 2003-2005 Rick Maddy
+ * IdeaVim - Vim emulator for IDEs based on the IntelliJ platform
+ * Copyright (C) 2003-2013 The IdeaVim authors
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package com.maddyhome.idea.vim.helper;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
@@ -763,7 +762,7 @@ public class SearchHelper {
       end = start + 1;
     }
     else {
-      end = findNextWordEnd(chars, start, stop, 1, false, false, false) + 1;
+      end = findNextWordEnd(chars, start, stop, 1, false, false) + 1;
     }
 
     return new TextRange(start, end);
@@ -828,10 +827,10 @@ public class SearchHelper {
                                                (onWordEnd && !hasSelection && (!(startSpace && isOuter) || (startSpace && !isOuter))
                                                 ? 1
                                                 : 0),
-                              isBig, true, !isOuter);
+                              isBig, !isOuter);
       }
       else {
-        end = findNextWordEnd(chars, pos, max, 1, isBig, true, !isOuter);
+        end = findNextWordEnd(chars, pos, max, 1, isBig, !isOuter);
       }
     }
 
@@ -841,7 +840,7 @@ public class SearchHelper {
     if (dir == 1 && isOuter) {
       int firstEnd = end;
       if (count > 1) {
-        firstEnd = findNextWordEnd(chars, pos, max, 1, isBig, true, false);
+        firstEnd = findNextWordEnd(chars, pos, max, 1, isBig, false);
       }
       if (firstEnd < max) {
         if (CharacterHelper.charType(chars.charAt(firstEnd + 1), false) != CharacterHelper.CharacterType.WHITESPACE) {
@@ -861,7 +860,7 @@ public class SearchHelper {
     if (!goForward && dir == 1 && isOuter) {
       int firstEnd = end;
       if (count > 1) {
-        firstEnd = findNextWordEnd(chars, pos, max, 1, isBig, true, false);
+        firstEnd = findNextWordEnd(chars, pos, max, 1, isBig, false);
       }
       if (firstEnd < max) {
         if (CharacterHelper.charType(chars.charAt(firstEnd + 1), false) != CharacterHelper.CharacterType.WHITESPACE) {
@@ -904,27 +903,27 @@ public class SearchHelper {
   /**
    * This finds the offset to the end of the next/previous word/WORD.
    *
+   *
    * @param editor   The editor to search in
    * @param count    The number of words to skip. Negative for backward searches
    * @param bigWord  If true then find WORD, if false then find word
    * @return The offset of match
    */
-  public static int findNextWordEnd(@NotNull Editor editor, int count, boolean bigWord, boolean stayEnd) {
+  public static int findNextWordEnd(@NotNull Editor editor, int count, boolean bigWord) {
     CharSequence chars = editor.getDocument().getCharsSequence();
     int pos = editor.getCaretModel().getOffset();
     int size = EditorHelper.getFileSize(editor);
 
-    return findNextWordEnd(chars, pos, size, count, bigWord, stayEnd, false);
+    return findNextWordEnd(chars, pos, size, count, bigWord, false);
   }
 
-  public static int findNextWordEnd(@NotNull CharSequence chars, int pos, int size, int count, boolean bigWord, boolean stayEnd,
-                                    boolean spaceWords) {
+  public static int findNextWordEnd(@NotNull CharSequence chars, int pos, int size, int count, boolean bigWord, boolean spaceWords) {
     int step = count >= 0 ? 1 : -1;
     count = Math.abs(count);
 
     int res = pos;
     for (int i = 0; i < count; i++) {
-      res = findNextWordEndOne(chars, res, size, step, bigWord, stayEnd, spaceWords);
+      res = findNextWordEndOne(chars, res, size, step, bigWord, spaceWords);
       if (res == pos || res == 0 || res == size - 1) {
         break;
       }
@@ -933,7 +932,11 @@ public class SearchHelper {
     return res;
   }
 
-  private static int findNextWordEndOne(@NotNull CharSequence chars, int pos, int size, int step, boolean bigWord, boolean stayEnd,
+  private static int findNextWordEndOne(@NotNull CharSequence chars,
+                                        int pos,
+                                        int size,
+                                        int step,
+                                        boolean bigWord,
                                         boolean spaceWords) {
     boolean found = false;
     // For forward searches, skip any current whitespace so we start at the start of a word

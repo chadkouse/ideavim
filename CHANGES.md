@@ -4,8 +4,45 @@ The Changelog
 History of changes in IdeaVim for the IntelliJ platform.
 
 
-0.29, TBD
----------
+0.32, 2013-11-15
+----------------
+
+Fixed API compatibility with IntelliJ platform builds 132.1052+.
+
+
+0.31, 2013-11-12
+----------------
+
+A bugfix release.
+
+Bug fixes:
+
+* VIM-582 Fixed line comment and reformat commands with no visual selection
+
+
+0.30, 2013-11-11
+----------------
+
+Added support for a separate `.ideavimrc` config file. Fixed long-standing
+issues with merged undo/redo commands and `<Esc>` during code completion.
+Various bug fixes.
+
+Features:
+
+* VIM-425 Read config from .ideavimrc if available
+
+Bug fixes:
+
+* VIM-98 Invoke actions in separate commands for better undo/redo
+* VIM-193 Launch Vim action handler for `<Esc>` in completion windows
+* VIM-440 Fixed `:e` open file dialog
+* VIM-550 `:put` creates a new line
+* VIM-551 Argument of `:put` is optional
+* Fixed several reported exceptions
+
+
+0.29, 2013-05-15
+----------------
 
 A bugfix release.
 
